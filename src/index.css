@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    background-color: #070a10;
+    color: #f1f5f9;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  canvas {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Android 16:9 Stage (16:9 Landscape, 9:16 Portrait) */
+.android-stage {
+  position: relative;
+  overflow: hidden;
+  background-color: #0e121a;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  height: min(100dvh, calc(100vw * 9 / 16));
+  box-shadow: 0 0 0 1px rgba(51, 65, 85, 0.45), 0 24px 60px rgba(0, 0, 0, 0.75);
+}
+
+@media (orientation: portrait) {
+  .android-stage {
+    width: min(100vw, calc(100dvh * 9 / 16));
+    height: min(100dvh, calc(100vw * 16 / 9));
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-stroke {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px rgba(10, 14, 22, 0.92);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

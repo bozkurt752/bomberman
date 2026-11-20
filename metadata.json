@@ -1,0 +1,6 @@
+{
+  "name": "Bomberman Mobil Arena",
+  "description": "Android dokunmatik kontrollü, gerçek zamanlı çok oyunculu arkadaş eşleşmeli ve Gemini Nano Banana 2.1 görsel stüdyolu Bomberman arcade oyunu.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

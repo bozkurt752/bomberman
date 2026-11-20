@@ -1,0 +1,135 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidPlayerProfile(data) {
+      return data.keys().hasAll([
+          'uid',
+          'displayName',
+          'photoUrl',
+          'avatarId',
+          'bestScore',
+          'soloHighestUnlocked',
+          'mpHighestUnlocked',
+          'totalMatches',
+          'totalWins',
+          'totalKills',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid',
+          'displayName',
+          'photoUrl',
+          'avatarId',
+          'bestScore',
+          'soloHighestUnlocked',
+          'mpHighestUnlocked',
+          'totalMatches',
+          'totalWins',
+          'totalKills',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.uid is string
+        && data.uid.size() >= 1
+        && data.uid.size() <= 128
+        && data.uid.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.uid == request.auth.uid
+        && data.displayName is string
+        && data.displayName.size() >= 1
+        && data.displayName.size() <= 32
+        && data.photoUrl is string
+        && data.photoUrl.size() <= 512
+        && data.avatarId is string
+        && data.avatarId.size() >= 1
+        && data.avatarId.size() <= 16
+        && data.avatarId in ['knight', 'samurai', 'ninja', 'mage']
+        && data.bestScore is int
+        && data.bestScore >= 0
+        && data.bestScore <= 100000000
+        && data.soloHighestUnlocked is int
+        && data.soloHighestUnlocked >= 1
+        && data.soloHighestUnlocked <= 500
+        && data.mpHighestUnlocked is int
+        && data.mpHighestUnlocked >= 1
+        && data.mpHighestUnlocked <= 100
+        && data.totalMatches is int
+        && data.totalMatches >= 0
+        && data.totalMatches <= 1000000
+        && data.totalWins is int
+        && data.totalWins >= 0
+        && data.totalWins <= 1000000
+        && data.totalKills is int
+        && data.totalKills >= 0
+        && data.totalKills <= 10000000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /playerProfiles/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow list: if false;
+      allow create: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidPlayerProfile(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isVerifiedUser()
+        && isOwner(userId)
+        && isValidPlayerProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().bestScore >= existing().bestScore
+        && incoming().soloHighestUnlocked >= existing().soloHighestUnlocked
+        && incoming().mpHighestUnlocked >= existing().mpHighestUnlocked
+        && incoming().totalMatches >= existing().totalMatches
+        && incoming().totalWins >= existing().totalWins
+        && incoming().totalKills >= existing().totalKills
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName',
+          'photoUrl',
+          'avatarId',
+          'bestScore',
+          'soloHighestUnlocked',
+          'mpHighestUnlocked',
+          'totalMatches',
+          'totalWins',
+          'totalKills',
+          'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+  }
+}

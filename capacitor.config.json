@@ -1,0 +1,10 @@
+{
+  "appId": "com.bomberman.mobilarena",
+  "appName": "Bomberman Mobil Arena",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "android": {
+    "backgroundColor": "#0E121A",
+    "allowMixedContent": false
+  }
+}

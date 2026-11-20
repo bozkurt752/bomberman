@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "PlayerProfile": {
+      "title": "PlayerProfile",
+      "description": "Cloud-synced Bomberman player profile storing hero choice, best score, and Solo/Multiplayer level progress.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the signed-in Google player.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Player display name shown in game rooms and profile card.",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "Optional Google profile avatar URL.",
+          "maxLength": 512
+        },
+        "avatarId": {
+          "type": "string",
+          "description": "Selected Bomberman hero preset ID.",
+          "enum": ["knight", "samurai", "ninja", "mage"],
+          "maxLength": 16
+        },
+        "bestScore": {
+          "type": "integer",
+          "description": "Highest arcade score achieved by the player."
+        },
+        "soloHighestUnlocked": {
+          "type": "integer",
+          "description": "First unpassed Solo Campaign level (1..500)."
+        },
+        "mpHighestUnlocked": {
+          "type": "integer",
+          "description": "First unpassed Multiplayer level (1..100)."
+        },
+        "totalMatches": {
+          "type": "integer",
+          "description": "Total completed matches."
+        },
+        "totalWins": {
+          "type": "integer",
+          "description": "Total cleared levels/victories."
+        },
+        "totalKills": {
+          "type": "integer",
+          "description": "Total enemies eliminated across matches."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "photoUrl",
+        "avatarId",
+        "bestScore",
+        "soloHighestUnlocked",
+        "mpHighestUnlocked",
+        "totalMatches",
+        "totalWins",
+        "totalKills",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/playerProfiles/{userId}": {
+      "schema": { "$ref": "#/entities/PlayerProfile" },
+      "description": "Owner-isolated player progression, score, and hero profile synced via Google Sign-In."
+    }
+  }
+}
